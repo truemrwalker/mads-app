@@ -15938,6 +15938,11 @@ vinyl@^1.1.0:
     clone-stats "^0.0.1"
     replace-ext "0.0.1"
 
+vis-graph3d@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/vis-graph3d/-/vis-graph3d-6.0.1.tgz#4feb921208922d8712d43fb64b498cbdeff89979"
+  integrity sha512-9DEPfXvMDUnwbWGwrPLxI1me2fs5hKyakUg6mV66Qu9Ua6SG3Zj10Bqlkv7b+E8OOCTLt4PgNJfBNpzUo5dJXw==
+
 vm-browserify@^1.0.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"

@@ -74,6 +74,7 @@
     "style-loader": "^2.0.0",
     "url-loader": "^4.1.1",
     "uuid": "^8.3.2",
+    "vis-graph3d": "^6.0.1",
     "webpack": "^5.21.2",
     "webpack-bundle-tracker": "^1.0.0-alpha.1",
     "webpack-dev-server": "3.11.2",
