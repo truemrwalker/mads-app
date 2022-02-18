@@ -26,8 +26,6 @@ import App from './containers/MadsApp';
 import * as reducers from './reducers';
 import generalSettings from '../../configSettings'
 import $ from 'jquery';
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
 
 //-------------------------------------------------------------------------------------------------
 

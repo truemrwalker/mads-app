@@ -23,6 +23,9 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Lasso
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import ExtraTreesRegressor
+from sklearn.neural_network import MLPRegressor
+from sklearn.kernel_ridge import KernelRidge
 from sklearn.svm import SVR
 from sklearn.model_selection import cross_validate, KFold
 
@@ -32,13 +35,11 @@ logger = logging.getLogger(__name__)
 
 #-------------------------------------------------------------------------------------------------
 def get_regression(data):
-    feature_columns  = data['view']['settings']['featureColumns']
+    feature_columns = data['view']['settings']['featureColumns']
     target_column = data['view']['settings']['targetColumn']
     folds = data['view']['settings']['folds']
     method = data['view']['settings']['method']
-
-    print('-----')
-    print(folds)
+    method_args = data['view']['settings']['methodArguments']
 
     dataset = data['data']
     df = pd.DataFrame(dataset)
@@ -59,11 +60,20 @@ def get_regression(data):
         reg = Lasso()
         cv_model = Lasso()
     elif method == 'SVR':
-        reg = SVR()
-        cv_model = SVR()
-    else: # RandomForest
-        reg = RandomForestRegressor(n_estimators=10, random_state=0)
-        cv_model = RandomForestRegressor(n_estimators=10, random_state=0)
+        reg = SVR(C=float(method_args['arg1']), gamma=float(method_args['arg2']))
+        cv_model = SVR(C=float(method_args['arg1']), gamma=float(method_args['arg2']))
+    elif method == 'RandomForest':
+        reg = RandomForestRegressor(random_state=int(method_args['arg1']), n_estimators=int(method_args['arg2']))
+        cv_model = RandomForestRegressor(random_state=int(method_args['arg1']), n_estimators=int(method_args['arg2']))
+    elif method == 'ExtraTrees':
+        reg = ExtraTreesRegressor(random_state=int(method_args['arg1']), n_estimators=int(method_args['arg2']))
+        cv_model = ExtraTreesRegressor(random_state=int(method_args['arg1']), n_estimators=int(method_args['arg2']))
+    elif method == 'MLP':
+        reg = MLPRegressor(random_state=int(method_args['arg1']), max_iter=int(method_args['arg2']))
+        cv_model = MLPRegressor(random_state=int(method_args['arg1']), max_iter=int(method_args['arg2']))
+    else: # KernelRidge
+        reg = KernelRidge(alpha=float(method_args['arg1']))
+        cv_model = KernelRidge(alpha=float(method_args['arg1']))
 
     reg.fit(X, y)
     y_predict = reg.predict(X)
@@ -72,19 +82,17 @@ def get_regression(data):
     data = {}
 
     data[target_column] = y
-    # logger.info(y_predict)
     data[p_name] = y_predict
 
 
     # cross validation
-    kf = KFold(shuffle=True, random_state=0, n_splits=folds)
+    kf = KFold(shuffle=True, random_state=int(method_args['arg1']), n_splits=folds)
     scoring = {
         'r2': 'r2',
         'mae': 'neg_mean_absolute_error',
     }
 
     scores = cross_validate(cv_model, X, y, cv=kf, scoring=scoring)
-    print(scores)
     data['scores'] = scores
 
     return data, reg

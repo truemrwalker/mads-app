@@ -163,7 +163,6 @@ class RegressionVis extends Component {
     } = this.props;
 
     const { x: xName, y: yName, color } = mappings;
-
     const df = new DataFrame(data);
 
     let x = [];

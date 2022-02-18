@@ -160,7 +160,7 @@ export default function withCommandInterface(
 
       // Add the ViewWrapper to the DOM
       return (
-        <div className="view-container">
+        <div className="view-container" style={{border: '2px solid red', backgroundColor: 'orange', padding: "10px"}} key={id}>
           <Button
             size="mini"
             icon="remove"
@@ -182,7 +182,7 @@ export default function withCommandInterface(
             showMessage={actions.showMessage}
           />
 
-          <Modal open={propSheetOpen} onClose={this.close}>
+          <Modal open={propSheetOpen} onClose={this.close} onMouseDown={ e => e.stopPropagation() }> {/* FORTEST: [onMouseDown={ e => e.stopPropagation() }] */}
             <Modal.Header>
               {view.name} {`[${view.id}]`}
             </Modal.Header>

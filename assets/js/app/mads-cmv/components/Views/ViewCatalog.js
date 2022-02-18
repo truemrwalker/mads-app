@@ -373,6 +373,10 @@ const config = [
     component: RegressionView,
     settings: {
       method: 'Linear',
+      methodArguments: {
+        arg1: 0,
+        arg2: 0
+      },
       featureColumns: [],
       targetColumn: '',
       folds: 5,
@@ -392,6 +396,10 @@ const config = [
     component: ClassificationView,
     settings: {
       method: 'RandomForest',
+      methodArguments: {
+        arg1: 0,
+        arg2: 0
+      },
       featureColumns: [],
       targetColumn: '',
       mappings: {},

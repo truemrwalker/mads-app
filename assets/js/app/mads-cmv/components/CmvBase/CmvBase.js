@@ -31,9 +31,27 @@ import './style.css';
 
 // *** TODO *** TRYING TO IMPLEMENT MOVABLE VIEWS
 // import { Responsive, WidthProvider } from "react-grid-layout" //*** TODO: movable views
-// import "react-grid-layout/css/styles.css"; //*** TODO: movable views
-// import "react-resizable/css/styles.css"; //*** TODO: movable views
+// import GridLayout from "react-grid-layout"
+import { Responsive, WidthProvider } from "react-grid-layout"
+import "react-grid-layout/css/styles.css"; //*** TODO: movable views
+import "react-resizable/css/styles.css"; //*** TODO: movable views
 // const ResponsiveReactGridLayout = WidthProvider(Responsive) //*** TODO: movable views
+
+
+const ResponsiveGridLayout = WidthProvider(Responsive);
+let viewCounter = 1;
+
+function goForIt(layout){
+  console.warn("layout changed");
+  console.warn(layout);
+}
+
+function letsGoForItAgain(ItemCallback){
+  console.warn("stopped resize");
+  console.warn(ItemCallback);
+}
+
+
 
 //-------------------------------------------------------------------------------------------------
 // The Component Class
@@ -73,36 +91,87 @@ class CmvBase extends React.Component {
       if(componentDef){
         const View = componentDef.component;
 
+        const CustomGridItemComponent = React.forwardRef(
+          ({style, className, ...props}, ref) => {
+            return (
+              <div style={{ ...style}} className={className} ref={ref}>
+                {/* Some other content */}
+                aaaaa
+                <View
+                  key={view.id}
+                  data-grid={{x: 0, y: 0, w: 1, h: 1}}
+                  id={view.id}
+                  view={view}
+                  dataset={dataset}
+                  selection={selection}
+                  colorTags={colorTags}
+                  removeView={actions.removeViewData}
+                  updateView={actions.updateView}
+                  updateSelection={actions.updateSelection}
+                  actions={actions}
+                  isLoggedIn={userInfo.isLoggedIn}
+                  version={componentDef.version}
+                  devStage={componentDef.devStage}
+                />
+              </div>
+            );
+          }
+        );
+
         return (
-          <View
-            key={view.id}
-            id={view.id}
-            view={view}
-            dataset={dataset}
-            selection={selection}
-            colorTags={colorTags}
-            removeView={actions.removeViewData}
-            updateView={actions.updateView}
-            updateSelection={actions.updateSelection}
-            actions={actions}
-            isLoggedIn={userInfo.isLoggedIn}
-            version={componentDef.version}
-            devStage={componentDef.devStage}
-          />
+          // <div style={{border: '2px solid red', backgroundColor: 'yellow', padding: "10px"}} data-grid={{x: 0, y: 0, w: 1, h: 1}} key={view.id}>
+            <CustomGridItemComponent
+              key={view.id}
+              // data-grid={{x: 0, y: 0, w: 1, h: 1}}
+              // id={view.id}
+              // view={view}
+              // dataset={dataset}
+              // selection={selection}
+              // colorTags={colorTags}
+              // removeView={actions.removeViewData}
+              // updateView={actions.updateView}
+              // updateSelection={actions.updateSelection}
+              // actions={actions}
+              // isLoggedIn={userInfo.isLoggedIn}
+              // version={componentDef.version}
+              // devStage={componentDef.devStage}
+            />
+          // </div>
         );
       }
     });
 
     return (
       <div>
-        <ColorTags />
+        <div className="base-container">
+          <ColorTags />
+          <AddViewButton views={views} />
+        </div>
 
         <div className="ui divider" />
 
-        <div className="base-container">
+        <ResponsiveGridLayout className="layout"
+          breakpoints={{lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0}} rowHeight={50} cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}}
+          compactType={'horizontal'} style={{border: '4px solid blue'}} autoSize={true} onLayoutChange={goForIt} onResizeStop={letsGoForItAgain}>
+          {viewContainers}
+          {/* <div style={{border: '2px solid red', backgroundColor: 'pink'}} data-grid={{x: 0, y: 0, w: 1, h: 1}} key="1">1</div> */}
+          {/* <div style={{border: '2px solid blue', backgroundColor: 'purple'}} data-grid={{x: 0, y: 0, w: 1, h: 1}} key="2">2</div> */}
+          {/* <div style={{border: '2px solid green', backgroundColor: 'orange'}} data-grid={{x: 0, y: 0, w: 1, h: 1}} key="17">Fake</div> */}
+          {/* <div style={{border: '2px solid salmon', backgroundColor: 'brown'}} data-grid={{x: 0, y: 0, w: 1, h: 1}} key="4">4</div> */}
+          {/* <div style={{border: '2px solid brown', backgroundColor: 'red'}} data-grid={{x: 0, y: 0, w: 1, h: 1}} key="5">5</div> */}
+        </ResponsiveGridLayout>
+
+        {/* <GridLayout className="layout" cols={12} rowHeight={30} width={1200}>
+          <div style={{border: '2px solid red'}} key="a" data-grid={{x: 0, y: 0, w: 1, h: 2, static: false}}>a</div>
+          <div style={{border: '2px solid blue'}} key="b" data-grid={{x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4}}>b</div>
+          <div style={{border: '2px solid green'}} key="c" data-grid={{x: 4, y: 0, w: 1, h: 2}}>c</div>
+        </GridLayout> */}
+
+        {/* FORTEST: [style={{border: '4px solid blue'}}]  */}
+        {/* <div className="base-container" style={{border: '4px solid blue'}}>
           {viewContainers}
           <AddViewButton views={views} />
-        </div>
+        </div> */}
       </div>
     );
   }

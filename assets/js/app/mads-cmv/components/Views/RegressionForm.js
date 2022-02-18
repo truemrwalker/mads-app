@@ -45,6 +45,13 @@ const getDropdownOptions = (list) =>
 //=======================
 
 //=======================
+const setSubmitButtonDisable = (disableState) => {
+  if (disableState) { $(".ui.positive.button").prop('disabled', true); }
+  else{ $(".ui.positive.button").prop('disabled', false); }
+}
+//=======================
+
+//=======================
 const validate = (values) => {
   const errors = {};
   if (!values.featureColumns) {
@@ -56,6 +63,8 @@ const validate = (values) => {
   if (!values.targetColumn) {
     errors.targetColumn = 'Required';
   }
+
+  setSubmitButtonDisable( errors.featureColumns || errors.targetColumn );
 
   return errors;
 };
@@ -85,7 +94,30 @@ const RegressionForm = (props) => {
     props: { style: '' },
   }));
 
-  const methods = ['Linear', 'Lasso', 'SVR', 'RandomForest'];
+  const methods = ['Linear', 'Lasso', 'SVR', 'RandomForest', 'ExtraTrees', 'MLP', 'KernelRidge'];
+  const methodsArgs = {
+    Linear: [],
+    Lasso: [],
+    SVR: [
+      { name: 'C', defVal: 1.0 },
+      { name: 'gamma', defVal: 0.1 }
+    ],
+    RandomForest: [
+      { name: 'random_state', defVal: 0 },
+      { name: 'n_estimators', defVal: 100 }
+    ],
+    ExtraTrees: [
+      { name: 'random_state', defVal: 0 },
+      { name: 'n_estimators', defVal: 100 }
+    ],
+    MLP: [
+      { name: 'random_state', defVal: 1 },
+      { name: 'max_iter', defVal: 500 }
+    ],
+    KernelRidge: [
+      { name: 'alpha', defVal: 1.0 },
+    ],
+  };
 
   // input managers
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
@@ -165,6 +197,27 @@ const RegressionForm = (props) => {
     }
   };
 
+  const [currentMethodVal, setValue] = useState(
+    initialValues.method
+  );
+
+  const onMethodChange = (event) => {
+    setValue(event);
+    if(event != "Linear" && event != "Lasso"){
+      props.change('methodArguments.arg1', methodsArgs[event][0].defVal);
+      if(event != "KernelRidge"){
+        props.change('methodArguments.arg2', methodsArgs[event][1].defVal);
+      }
+      else{
+        props.change('methodArguments.arg2', initialValues.methodArguments.arg2);
+      }
+    }
+    else{
+      props.change('methodArguments.arg1', initialValues.methodArguments.arg1);
+      props.change('methodArguments.arg2', initialValues.methodArguments.arg2);
+    }
+  };
+
   // The form itself, as being displayed in the DOM
   return (
     <>
@@ -177,6 +230,7 @@ const RegressionForm = (props) => {
             placeholder="Method"
             search
             options={getDropdownOptions(methods)}
+            onChange={onMethodChange}
           />
         </Form.Field>
 
@@ -201,6 +255,28 @@ const RegressionForm = (props) => {
             options={columns}
           />
         </Form.Field>
+
+        {(currentMethodVal != 'Linear' && currentMethodVal != 'Lasso') && <div>
+          <label style={{fontWeight: "bold", textDecoration: "underline"}}>{currentMethodVal} Parameters:</label>
+          <Form.Group widths="equal" style={{paddingTop: "6px"}}>
+            <Form.Field>
+              <label>{methodsArgs[currentMethodVal][0].name}:</label>
+              <Field
+                name="methodArguments.arg1"
+                component="input"
+                type="number"
+              />
+            </Form.Field>
+            {(currentMethodVal != 'KernelRidge') && <Form.Field>
+            <label>{methodsArgs[currentMethodVal][1].name}:</label>
+              <Field
+                name="methodArguments.arg2"
+                component="input"
+                type="number"
+              />
+            </Form.Field>}
+          </Form.Group>
+        </div>}
 
         <hr></hr>
 
