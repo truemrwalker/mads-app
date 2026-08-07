@@ -51,7 +51,6 @@ class MLP_Base_Component extends withCommandInterface(MLP_Component, MLP_Compone
 
   // Manages Save Model Requests
   handleModelSave = (name, overwrite, id) => {
-    // Note: override this if necessary
     const { actions, saveParams } = this.props;
 
     if (this.formReference && typeof this.formReference.submit === 'function') {
@@ -225,7 +224,7 @@ const MLP_Component_View = (props) => {
   }, [dataset, id, view, newValues]);
 
 
-  // form submit
+  // MLPForm submit
   const mlpHandleSubmit = (values, availableColumns) => {
 
     let updatedValues = { ...values };
@@ -278,11 +277,14 @@ const MLP_Component_View = (props) => {
 
   const tmpViewParamsList = { view, newValues: newValues, data: processedData };
 
-  const tmpViewParams = useMemo(() => ({
-    view,
-    newValues: newValues,
-    data: processedData
-  }), [view, processedData, newValues]);
+  const tmpViewParams = useMemo(() => {
+    const currentValues = newValues || view.settings || {};
+    return {
+      view,
+      newValues: currentValues,
+      data: processedData
+    };
+  }, [view, processedData, newValues]);
 
 
   return (
