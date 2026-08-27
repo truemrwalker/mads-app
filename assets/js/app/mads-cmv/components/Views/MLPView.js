@@ -51,13 +51,20 @@ class MLP_Base_Component extends withCommandInterface(MLP_Component, MLP_Compone
 
   // Manages Save Model Requests
   handleModelSave = (name, overwrite, id) => {
-    const { actions, saveParams } = this.props;
+    const { actions, saveParams, dataset } = this.props;
 
-    if (this.formReference && typeof this.formReference.submit === 'function') {
+    if (dataset[this.props.id] && this.formReference && typeof this.formReference.submit === 'function') {
       this.formReference.submit();
+      actions.saveModel(name, saveParams, overwrite, id);
     }
+    // else {
+    //   actions.showMessage({
+    //     header: 'THE MODEL CANNOT BE SAVED',
+    //     content: 'The model is not regressed yet. Please submit the form to run the regression before saving the model.',
+    //     type: 'error',
+    //   });
+    // }
 
-    actions.saveModel(name, saveParams, overwrite, id);
   };
 
   composeSubmittingData = (values) => { };
@@ -286,7 +293,6 @@ const MLP_Component_View = (props) => {
     };
   }, [view, processedData, newValues]);
 
-
   return (
     <MLP_Base_Component
       {...props}
@@ -294,7 +300,6 @@ const MLP_Component_View = (props) => {
       customSubmit={mlpHandleSubmit}
       data={processedData}
       saveParams={tmpViewParams}
-
     />
   );
 };
