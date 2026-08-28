@@ -102,6 +102,7 @@ const MLP_Component_Form = forwardRef((props, ref) => {
     handleSubmit,
     initialValues,
     defaultOptions,
+    dataset,
     columns,
     input,
     pristine,
@@ -111,6 +112,7 @@ const MLP_Component_Form = forwardRef((props, ref) => {
     invalid,
     isLoggedIn,
     dirty,
+    targetId,
   } = props;
 
 
@@ -177,7 +179,6 @@ const MLP_Component_Form = forwardRef((props, ref) => {
     const res = await api.prediction.fetchOwnedModels();
     const ownedModels = res.data;
     const pre = ownedModels.find((w) => w.name === values.name);
-
     // 'A workspace with the same name is existing. Do you want to overwrite it?'
     if (pre) {
       const response = await confirm();
@@ -329,9 +330,13 @@ const MLP_Component_Form = forwardRef((props, ref) => {
     }
   };
 
+  // check if the model is ready to be saved
+  const id = targetId || (dataset && dataset.id);
+  const isModelReady = Boolean(dataset && dataset[id]);
 
   // The form itself, as being displayed in the DOM
   return (
+
     <>
       <Form onSubmit={handleSubmit} ref={formElement}>
 
@@ -636,13 +641,20 @@ const MLP_Component_Form = forwardRef((props, ref) => {
           />
         </Form.Group>
 
-        <Button
-          color="blue"
-          disabled={invalid || !isLoggedIn}
-          onClick={onSaveModelClick}
-        >
-          Save model
-        </Button>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+          <Button
+            color="blue"
+            disabled={invalid || !isLoggedIn || !isModelReady}
+            onClick={onSaveModelClick}
+          >
+            Save model
+          </Button>
+          {!isModelReady && (
+            <p>Model regression should be run once before being able to be saved.</p>
+          )}
+        </div>
+
+
       </Form>
 
       <Modal open={saveDialogOpen} onClose={closeSaveDialog}>

@@ -51,14 +51,20 @@ class MLP_Base_Component extends withCommandInterface(MLP_Component, MLP_Compone
 
   // Manages Save Model Requests
   handleModelSave = (name, overwrite, id) => {
-    // Note: override this if necessary
-    const { actions, saveParams } = this.props;
+    const { actions, saveParams, dataset } = this.props;
 
-    if (this.formReference && typeof this.formReference.submit === 'function') {
+    if (dataset[this.props.id] && this.formReference && typeof this.formReference.submit === 'function') {
       this.formReference.submit();
+      actions.saveModel(name, saveParams, overwrite, id);
     }
+    // else {
+    //   actions.showMessage({
+    //     header: 'THE MODEL CANNOT BE SAVED',
+    //     content: 'The model is not regressed yet. Please submit the form to run the regression before saving the model.',
+    //     type: 'error',
+    //   });
+    // }
 
-    actions.saveModel(name, saveParams, overwrite, id);
   };
 
   composeSubmittingData = (values) => { };
@@ -225,7 +231,7 @@ const MLP_Component_View = (props) => {
   }, [dataset, id, view, newValues]);
 
 
-  // form submit
+  // MLPForm submit
   const mlpHandleSubmit = (values, availableColumns) => {
 
     let updatedValues = { ...values };
@@ -278,12 +284,14 @@ const MLP_Component_View = (props) => {
 
   const tmpViewParamsList = { view, newValues: newValues, data: processedData };
 
-  const tmpViewParams = useMemo(() => ({
-    view,
-    newValues: newValues,
-    data: processedData
-  }), [view, processedData, newValues]);
-
+  const tmpViewParams = useMemo(() => {
+    const currentValues = newValues || view.settings || {};
+    return {
+      view,
+      newValues: currentValues,
+      data: processedData
+    };
+  }, [view, processedData, newValues]);
 
   return (
     <MLP_Base_Component
@@ -292,7 +300,6 @@ const MLP_Component_View = (props) => {
       customSubmit={mlpHandleSubmit}
       data={processedData}
       saveParams={tmpViewParams}
-
     />
   );
 };
